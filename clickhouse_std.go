@@ -402,7 +402,13 @@ func (r *stdRows) Next(dest []driver.Value) error {
 				}
 				dest[i] = v
 			default:
-				dest[i] = value
+				if value == nil {
+					dest[i] = value
+				} else if t := reflect.TypeOf(value); t.Kind() == reflect.Pointer {
+					dest[i] = reflect.ValueOf(value).Elem().Interface()
+				} else {
+					dest[i] = value
+				}
 			}
 		}
 		return nil
